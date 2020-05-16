@@ -1,0 +1,59 @@
+package org.wannatalk.telegrambot;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.wannatalk.telegrambot.data.entities.Channel;
+import org.wannatalk.telegrambot.service.chat.ChatService;
+import org.wannatalk.telegrambot.service.chat.NewIncomingMessage;
+
+@Slf4j
+@Service
+@EnableConfigurationProperties(BotConfigurationProperties.class)
+@RequiredArgsConstructor
+public class TelegramBotService extends TelegramLongPollingBot {
+
+    private final BotConfigurationProperties properties;
+    private final ChatService chatService;
+
+    @Override
+    public void onUpdateReceived(Update update) {
+        try {
+            NewIncomingMessage message = NewIncomingMessage.builder()
+                    .message(update.getMessage().getText())
+                    .channel(Channel.TELEGRAM)
+                    .channelChatId(String.valueOf(update.getMessage().getChatId()))
+                    .who(String.valueOf(update.getMessage().getFrom().getId()))
+                    .build();
+            chatService.newMessage(message);
+            execute(message("wow", update.getMessage().getChatId()));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+        log.info("miau");
+    }
+
+    private SendMessage message(String text, Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        return sendMessage;
+    }
+
+
+    @Override
+    public String getBotUsername() {
+        return properties.getUsername();
+    }
+
+    @Override
+    public String getBotToken() {
+        return properties.getApiKey();
+    }
+
+}
