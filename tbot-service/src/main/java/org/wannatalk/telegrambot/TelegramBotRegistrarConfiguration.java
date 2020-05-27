@@ -3,7 +3,7 @@ package org.wannatalk.telegrambot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
@@ -12,9 +12,9 @@ import org.telegram.telegrambots.meta.generics.WebhookBot;
 import java.util.List;
 
 @Slf4j
-@Service
+@Configuration
 @RequiredArgsConstructor
-public class TelegramInitialiserConfiguration {
+public class TelegramBotRegistrarConfiguration {
 
     private final List<WebhookBot> webhookBots;
     private final List<LongPollingBot> longPollingBots;

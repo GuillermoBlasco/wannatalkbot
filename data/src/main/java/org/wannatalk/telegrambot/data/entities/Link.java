@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Data
-@Document("chats")
-public class Chat {
+@Document("link")
+public class Link {
 
     @Id
     private String id;
-
-    private LocalDateTime startTimestamp;
-    private Channel channel;
-    private String channelChatId;
-    private String whoId;
+    private LocalDateTime timestamp;
+    private String url;
+    private String title;
+    private String description;
+    private String textSearch;
 }
