@@ -17,4 +17,6 @@ public class Link {
     private String title;
     private String description;
     private String textSearch;
+    private String userId;
+
 }

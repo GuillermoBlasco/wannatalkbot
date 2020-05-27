@@ -15,8 +15,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-@Slf4j
 @Service
+@Slf4j
 @EnableConfigurationProperties(BotConfigurationProperties.class)
 @RequiredArgsConstructor
 public class TelegramBotService extends TelegramLongPollingBot {
@@ -29,17 +29,17 @@ public class TelegramBotService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         try {
             String text = update.getMessage().getText();
+            String userId = String.valueOf(update.getMessage().getFrom().getId());
             if (isUrl(text)) {
-                chatService.newLink(text);
+                chatService.newLink(text, userId);
                 execute(message("Stored!", update.getMessage().getChatId()));
             } else {
-                List<Link> link = chatService.findLink(text);
+                List<Link> link = chatService.findLink(text, userId);
                 execute(message("Found " + link.size() + " links", update.getMessage().getChatId()));
             }
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        log.info("miau");
     }
 
     private SendMessage message(String text, Long chatId) {

@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface LinkRepository extends MongoRepository<Link, String> {
 
-    List<Link> findAllByTextSearchLike(String text);
-    Optional<Link> findByUrl(String url);
+    List<Link> findAllByTextSearchLikeAndUserId(String text, String userId);
+    Optional<Link> findByUrlAndUserId(String url, String userId);
 }

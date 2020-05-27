@@ -25,6 +25,11 @@ public class ScrapeWebService {
     }
 
     private Optional<String> getDescription(Document doc) {
-        return doc.head().children().stream().filter(x -> x.attr("name").equals("description")).map(x -> x.attr("content")).findAny();
+        return doc.head()
+                .children()
+                .stream()
+                .filter(x -> x.attr("name").equals("description"))
+                .map(x -> x.attr("content"))
+                .findAny();
     }
 }
