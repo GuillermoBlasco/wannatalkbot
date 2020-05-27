@@ -14,6 +14,7 @@ import org.wannatalk.telegrambot.service.chat.ChatService;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -32,20 +33,35 @@ public class TelegramBotService extends TelegramLongPollingBot {
             String userId = String.valueOf(update.getMessage().getFrom().getId());
             if (isUrl(text)) {
                 chatService.newLink(text, userId);
-                execute(message("Stored!", update.getMessage().getChatId()));
+                execute(message("Stored\\!", update.getMessage().getChatId()));
             } else {
-                List<Link> link = chatService.findLink(text, userId);
-                execute(message("Found " + link.size() + " links", update.getMessage().getChatId()));
+                List<Link> links = chatService.findLink(text, userId);
+                String message = links.stream()
+                        .map(x -> {
+                            return "[" + scapeLinkText(x.getTitle()) + "](" + x.getUrl() + ")";
+                        })
+                        .limit(properties.getMaxLinksToSend())
+                        .collect(Collectors.joining("\n"));
+                execute(message("Found " + links.size() + " links, see them here: \n" + message, update.getMessage().getChatId()));
             }
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+    
+    private String scapeLinkText(String linkText) {
+        List<String> charsToReplace = List.of("_", "\\*", "\\[", "]", "\\(", "\\)", "~", "`", ">", "#", "\\+", "\\-", "=", "\\|", "\\{", "\\}", "\\.", "!");
+        for (String charToReplace : charsToReplace) {
+            linkText = linkText.replaceAll(charToReplace, "\\" + charToReplace);
+        }
+        return linkText;
     }
 
     private SendMessage message(String text, Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
+        sendMessage.setParseMode("MarkdownV2");
         return sendMessage;
     }
 

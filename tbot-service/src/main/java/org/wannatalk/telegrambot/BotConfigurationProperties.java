@@ -11,4 +11,5 @@ public class BotConfigurationProperties {
     public String name;
     public String username;
     public String apiKey;
+    public int maxLinksToSend = 5;
 }
